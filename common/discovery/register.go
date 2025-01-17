@@ -1,4 +1,4 @@
-package dicovery
+package discovery
 
 import (
 	"context"
@@ -36,6 +36,7 @@ func NewServiceRegister(ctx *context.Context, key string, endportinfo *EndpointI
 	}
 
 	err = s.putKeyWithLease(lease)
+	logger.Logger.Info().Msgf("register success! %v", endportinfo)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +73,9 @@ func (s *ServiceRegister) UpdateValue(val *EndpointInfo) error {
 	}
 	s.val = value
 	// print log info here
-	logger.Logger.
-		Info().
-		Msgf("ServiceRegister.updateValue leaseID=%d Put key=%s,val=%s, success!", s.leaseID, s.key, s.val)
+	// logger.Logger.
+	// 	Info().
+	// 	Msgf("ServiceRegister.updateValue leaseID=%d Put key=%s,val=%s, success!", s.leaseID, s.key, s.val)
 	return nil
 }
 
@@ -87,7 +88,7 @@ func (s *ServiceRegister) ListenLeaseRespChan() {
 	}
 
 	logger.Logger.
-		Info().
+		Error().
 		Msgf("lease failed !!!  leaseID:%d, Put key:%s,val:%s", s.leaseID, s.key, s.val)
 }
 

@@ -1,0 +1,13 @@
+global:
+  log_level: debug
+  env: debug
+ip_conf:
+  service_path: /plato/ip_dispatcher
+discovery:
+  endpoints: 
+    - localhost:2379    
+  timeout: 5
+gateway:
+  epoll_wait_queue_size: 100
+  epoll_num: 4
+  tcp_max_num: 70000

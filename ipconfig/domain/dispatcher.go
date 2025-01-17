@@ -4,6 +4,7 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/brelance/plato/common/logger"
 	"github.com/brelance/plato/ipconfig/source"
 )
 
@@ -20,6 +21,7 @@ func Init() {
 	dp.candidateTable = make(map[string]*Endport)
 	go func() {
 		for event := range source.EventChan() {
+			logger.Logger.Debug().Msgf("Dispatcher received the event %v", event)
 			switch event.Type {
 			case source.AddNodeEvent:
 				dp.addNode(*event)
@@ -42,10 +44,7 @@ func Dispatch(ctx *IpConfContext) []*Endport {
 		}
 
 		if eds[i].ActiveScore == eds[j].ActiveScore {
-			if eds[i].StaticScore > eds[j].StaticScore {
-				return true
-			}
-			return false
+			return eds[i].StaticScore > eds[j].StaticScore
 		}
 		return false
 	})
@@ -75,10 +74,12 @@ func (dp *Dispatcher) addNode(event source.Event) {
 
 	if ed, ok = dp.candidateTable[event.Key()]; !ok {
 		ed = NewEndPort(event.IP, event.Port)
+		logger.Logger.Debug().Msgf("Create Endport %s:%s", ed.IP, ed.Port)
 		dp.candidateTable[event.Key()] = ed
 	}
 
 	ed.UpdateStat(newStat)
+	logger.Logger.Debug().Msgf("Update stat window of Endport %s:%s", ed.IP, ed.Port)
 }
 
 func (dp *Dispatcher) delNode(event source.Event) {

@@ -24,11 +24,9 @@ func ReadData(conn *net.TCPConn) ([]byte, error) {
 	dataBuf := make([]byte, dataLen)
 	err = readFixedData(conn, dataBuf)
 	if err != nil {
-		return nil, fmt.Errorf("Read data error:%d", err.Error())
+		return nil, fmt.Errorf("Read data error:%s", err.Error())
 	}
-	// buffer := bytes.NewBuffer(dataLenBuf)
-	// binary.Read(buffer, binary.BigEndian, &dataLen)
-
+	return dataBuf, err
 }
 
 func readFixedData(conn *net.TCPConn, buf []byte) error {

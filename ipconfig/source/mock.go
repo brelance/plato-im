@@ -8,10 +8,11 @@ import (
 
 	"github.com/brelance/plato/common/config"
 	"github.com/brelance/plato/common/discovery"
-	"github.com/brelance/plato/common/logger"
 )
 
 func testServiceRegister(ctx *context.Context, port, node string) {
+	seed := time.Now().UnixNano()
+	rand := rand.New(rand.NewSource(seed))
 	// 模拟服务发现
 	go func() {
 		ed := discovery.EndpointInfo{
@@ -23,7 +24,6 @@ func testServiceRegister(ctx *context.Context, port, node string) {
 			},
 		}
 		sr, err := discovery.NewServiceRegister(ctx, fmt.Sprintf("%s/%s", config.GetServicePathFromIPConf(), node), &ed, time.Now().Unix())
-		logger.Logger.Info().Msg("register success")
 		if err != nil {
 			panic(err)
 		}

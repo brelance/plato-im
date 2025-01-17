@@ -32,6 +32,7 @@ func Datahandler(ctx *context.Context) {
 			if event := NewEvent(ed); event != nil {
 				event.Type = AddNodeEvent
 				eventChan <- event
+				logger.Logger.Debug().Msgf("Source send addEvent: %v", event)
 			}
 		} else {
 			logger.Logger.
@@ -45,6 +46,7 @@ func Datahandler(ctx *context.Context) {
 			if event := NewEvent(ed); event != nil {
 				event.Type = DelNodeEvent
 				eventChan <- event
+				logger.Logger.Debug().Msgf("Source send delEvent: %v", event)
 			}
 		} else {
 			logger.Logger.
