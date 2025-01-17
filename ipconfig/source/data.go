@@ -22,6 +22,7 @@ func Init() {
 	// debug
 }
 
+// core handler function
 func Datahandler(ctx *context.Context) {
 	dis := discovery.NewServiceDiscovery(ctx)
 	defer dis.Close()
@@ -56,4 +57,8 @@ func Datahandler(ctx *context.Context) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func EventChan() <-chan *Event {
+	return eventChan
 }
