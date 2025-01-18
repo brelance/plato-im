@@ -30,15 +30,21 @@ type ePool struct {
 func InitEpool(ln *net.TCPListener, f func(c *connction, ep *epoller)) {
 	setLimit()
 	epool = NewEpool(ln, f)
-
+	// create sender of eChan
+	epool.createAcceptProcess()
+	//  create receiver of eChan
+	epool.startEPool()
 }
 
 func (e *ePool) createAcceptProcess() {
-	for i := range runtime.NumCPU() {
+	for i := 0; i < runtime.NumCPU(); i++ {
 		go func() {
 			for {
-				c, err := e.ln.Accept()
+				c, err := e.ln.AcceptTCP()
 				if err != nil {
+					if ne, ok := err.(net.Error); ok && ne.Timeout() {
+						fmt.Errorf("accept timeout: %v", ne)
+					}
 					fmt.Errorf("err: %v", err)
 				}
 
@@ -46,6 +52,9 @@ func (e *ePool) createAcceptProcess() {
 					c.Close()
 					continue
 				}
+				setTCPConfig(c)
+				conn := newConnection(c)
+				epool.addTask(conn)
 			}
 		}()
 	}
@@ -59,6 +68,60 @@ func NewEpool(ln *net.TCPListener, f func(c *connction, ep *epoller)) *ePool {
 		ln:    ln,
 		f:     f,
 	}
+}
+
+// Start eSize epoller
+func (e *ePool) startEPool() {
+	for i := 0; i < e.eSize; i++ {
+		e.startEProc()
+	}
+}
+
+func (e *ePool) startEProc() {
+	ep, err := newEpoller()
+	if err != nil {
+		panic(err)
+	}
+	// the receiver of eChan
+	go func() {
+		for {
+			select {
+			case <-e.done:
+				return
+			case conn := <-e.eChan:
+				addTCPNum()
+				logger.Logger.Debug().Msgf("tcpNum: %d", getTCPNum())
+				if err := ep.add(conn); err != nil {
+					logger.Logger.Error().Msgf("Failed to add connection %v\n", err)
+					conn.Close()
+					continue
+				}
+				logger.Logger.Debug().Msgf("EpollerPool new connection[%v] tcpSize:%d\n", conn.RemoteAddr(), tcpNum)
+			}
+		}
+	}()
+
+	for {
+		select {
+		case <-e.done:
+			return
+		default:
+			connList, err := ep.wait(200)
+			if err != nil && err != syscall.EINTR {
+				logger.Logger.Error().Msgf("falied to epoll waith %v\n", err)
+			}
+			for _, conn := range connList {
+				if conn == nil {
+					break
+				}
+				epool.f(conn, ep)
+			}
+		}
+	}
+}
+
+func (e *ePool) addTask(conn *connction) {
+	e.eChan <- conn
 }
 
 type epoller struct {
@@ -90,6 +153,7 @@ func (ep *epoller) add(conn *connction) error {
 
 	ep.fdToConnTable.Store(fd, conn)
 	epool.tables.Store(conn.id, conn)
+	// bind epoller
 	conn.BindEpoller(ep)
 	return nil
 }
@@ -134,6 +198,7 @@ func socketFD(conn *net.TCPConn) int {
 	return int(pfdVal.FieldByName("Sysfd").Int())
 }
 
+// Allow gateway process to acquire the max number of resources, such as fd.
 func setLimit() {
 	var rLimit syscall.Rlimit
 	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
@@ -150,6 +215,10 @@ func checkTCPLimit() bool {
 	tcpNum := getTCPNum()
 	maxTCPNum := config.GetMaxTCPNum()
 	return tcpNum <= maxTCPNum
+}
+
+func setTCPConfig(conn *net.TCPConn) {
+	conn.SetKeepAlive(true)
 }
 
 func addTCPNum() {
