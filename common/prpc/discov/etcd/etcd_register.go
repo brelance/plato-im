@@ -10,8 +10,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/brelance/plato/common/prpc/discov"
 	"github.com/bytedance/gopkg/util/logger"
-	"github.com/hardcore-os/plato/common/prpc/discov"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 

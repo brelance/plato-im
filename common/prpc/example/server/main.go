@@ -5,11 +5,11 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/brelance/plato/common/config"
 
-	"github.com/hardcore-os/plato/common/prpc"
-	"github.com/hardcore-os/plato/common/prpc/example/helloservice"
-	ptrace "github.com/hardcore-os/plato/common/prpc/trace"
+	"github.com/brelance/plato/common/prpc"
+	"github.com/brelance/plato/common/prpc/example/helloservice"
+	ptrace "github.com/brelance/plato/common/prpc/trace"
 	"google.golang.org/grpc"
 )
 

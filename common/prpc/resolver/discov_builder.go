@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hardcore-os/plato/common/prpc/discov"
+	"github.com/brelance/plato/common/prpc/discov"
 	"google.golang.org/grpc/attributes"
 	"google.golang.org/grpc/resolver"
 )
@@ -52,7 +52,8 @@ func (d *DiscovBuilder) Build(target resolver.Target, cc resolver.ClientConn, _ 
 }
 
 func (d *DiscovBuilder) getServiceName(target resolver.Target) string {
-	return target.Endpoint
+	return target.URL.Path
+	// return target.Endpoint
 }
 
 func (d *DiscovBuilder) Close() {

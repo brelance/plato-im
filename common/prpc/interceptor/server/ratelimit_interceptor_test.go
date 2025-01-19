@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	pcode "github.com/hardcore-os/plato/common/prpc/code"
+	pcode "github.com/brelance/plato/common/prpc/code"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"

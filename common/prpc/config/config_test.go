@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hardcore-os/plato/common/config"
+	"github.com/brelance/plato/common/config"
 )
 
 func TestMain(m *testing.M) {

@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	ptrace "github.com/hardcore-os/plato/common/prpc/trace"
+	ptrace "github.com/brelance/plato/common/prpc/trace"
 	"google.golang.org/grpc"
 )
 
