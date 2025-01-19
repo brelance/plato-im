@@ -1,7 +1,6 @@
 package gateway
 
 import (
-	"fmt"
 	"net"
 	"reflect"
 	"runtime"
@@ -43,9 +42,9 @@ func (e *ePool) createAcceptProcess() {
 				c, err := e.ln.AcceptTCP()
 				if err != nil {
 					if ne, ok := err.(net.Error); ok && ne.Timeout() {
-						fmt.Errorf("accept timeout: %v", ne)
+						logger.Logger.Error().Msgf("accept timeout: %v", ne)
 					}
-					fmt.Errorf("err: %v", err)
+					logger.Logger.Error().Msgf("err: %v", err)
 				}
 
 				if !checkTCPLimit() {
