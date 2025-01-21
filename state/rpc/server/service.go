@@ -18,7 +18,7 @@ type CmdContext struct {
 	Cmd      int32
 	Endpoint string
 	ConnID   uint64
-	payload  []byte
+	Payload  []byte
 }
 
 type Service struct {
@@ -32,7 +32,7 @@ func (service *Service) CancelConn(ctx context.Context, sr *StateRequest) (*Stat
 		Cmd:      CancelConnCmd,
 		Endpoint: sr.GetEndpoint(),
 		ConnID:   sr.GetConnID(),
-		payload:  sr.GetData(),
+		Payload:  sr.GetData(),
 	}
 	service.CmdChannel <- cmd
 	logger.Logger.
@@ -50,7 +50,7 @@ func (service *Service) SendMsg(ctx context.Context, sr *StateRequest) (*StateRe
 		Cmd:      SendMsgCmd,
 		Endpoint: sr.GetEndpoint(),
 		ConnID:   sr.GetConnID(),
-		payload:  sr.GetData(),
+		Payload:  sr.GetData(),
 	}
 	service.CmdChannel <- cmd
 	logger.Logger.
