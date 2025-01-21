@@ -1,5 +1,5 @@
 package client
 
-func InitStateClient() {
+func Init() {
 	initStateClient()
 }

@@ -18,7 +18,7 @@ func initStateClient() {
 		panic(err)
 	}
 	// Why
-	cli, err := pCli.DialByEndPoint(config.GetGatewayServiceName())
+	cli, err := pCli.DialByEndPoint(config.GetGatewayStateServerEndPoint())
 	if err != nil {
 		panic(err)
 	}
