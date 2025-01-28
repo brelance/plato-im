@@ -3,12 +3,36 @@ package state
 import (
 	"context"
 
+	"github.com/brelance/plato/common/config"
 	"github.com/brelance/plato/common/idl/message"
 	"github.com/brelance/plato/common/logger"
+	"github.com/brelance/plato/common/prpc"
 	"github.com/brelance/plato/state/rpc/client"
 	service "github.com/brelance/plato/state/rpc/server"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 )
+
+func RunMain(path string) {
+	ctx := context.TODO()
+	config.Init(path)
+	client.Init()
+	InitTimer()
+	InitCacheState(ctx)
+
+	// handler function that processing message send from state rpc client(gateway)
+	go cmdHandler()
+	// start state rpc server
+	s := prpc.NewPServer(
+		prpc.WithServiceName(config.GetStateServiceName()),
+		prpc.WithIP(config.GetSateServiceAddr()),
+		prpc.WithPort(config.GetSateServerPort()), prpc.WithWeight(config.GetSateRPCWeight()))
+	s.RegisterService(func(server *grpc.Server) {
+		service.RegisterStateServer(server, cs.server)
+	})
+	// 启动 rpc server
+	s.Start(ctx)
+}
 
 // state RPC server
 func cmdHandler() {

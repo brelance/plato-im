@@ -33,3 +33,7 @@ func GetLogLevelForLogger() string {
 func IsDebug() bool {
 	return viper.GetString("global.env") == "debug"
 }
+
+func GetCacheRedisEndpointList() []string {
+	return viper.GetStringSlice("cache.redis.endpoints")
+}

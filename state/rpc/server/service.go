@@ -23,6 +23,7 @@ type CmdContext struct {
 
 type Service struct {
 	CmdChannel chan *CmdContext
+	UnimplementedStateServer
 }
 
 func (service *Service) CancelConn(ctx context.Context, sr *StateRequest) (*StateResponse, error) {

@@ -11,7 +11,7 @@ import (
 	"github.com/rocket049/gocui"
 
 	"github.com/gookit/color"
-	"github.com/hardcore-os/plato/common/sdk"
+	"github.com/brelance/plato/common/sdk"
 )
 
 func init() {

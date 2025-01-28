@@ -1,38 +1,47 @@
 syntax = "proto3";
 
-option go_package = "./message";
-package message;
+option go_package = "./;message";
 
-enum CmdType {
-    Login = 0; 
+package message;
+// cd common/idl; protoc -I message  --go_out=plugins=grpc:message  message/message.proto
+enum CmdType { //枚举消息类型
+    Login = 0;
     Heartbeat = 1;
     ReConn = 2;
     ACK = 3;
-    UP = 4;
-    Push = 5;
+    UP = 4; // 上行消息
+    Push = 5; // 下行 推送消息
 }
 
-message UPMsgHead {
-    uint64 ClientID = 1;
-    uint64 ConnID = 2;
-    string SessionID = 3;
+
+// 顶层cmd pb结构
+message MsgCmd{
+   CmdType Type = 1;
+   bytes Payload = 2;
 }
 
-message MsgCmd {
+// 上行消息 pb结构
+message UPMsg{
     UPMsgHead Head = 1;
     bytes UPMsgBody = 2;
-}
+ }
+ 
+ // 上行消息头 pb结构
+message UPMsgHead{
+    uint64 ClientID = 1;
+    uint64 ConnID = 2;
+    string SessionId = 3;
+ }
 
-
-message PushMsg {
-    uint64 MsgID = 1;
-    uint64 SessionID = 2;
-    bytes Content = 3;
-}
-
+ message PushMsg{
+     uint64 MsgID   = 1;
+     uint64 SessionID = 2;
+     bytes  Content = 3;
+ }
+// ACK 消息
 message ACKMsg {
     uint32 Code = 1;
-    string  Msg = 2;
+    string Msg = 2; 
     CmdType Type = 3;
     uint64 ConnID = 4;
     uint64 ClientID = 5;
@@ -40,24 +49,26 @@ message ACKMsg {
     uint64 MsgID = 7;
 }
 
+// 登陆消息
 message LoginMsgHead {
-    uint64 DeviceID = 1;
+     uint64 DeviceID = 1;
 }
 
 message LoginMsg {
-    LoginMsgHead Head = 1;
-    bytes LoginMsgBody = 2;
+   LoginMsgHead Head = 1;
+   bytes LoginMsgBody = 2;
 }
 
+// 心跳消息
 message HeartbeatMsgHead {
 }
 
 message HeartbeatMsg {
-    HeartbeatMsgHead Head = 1;
-    bytes HeartbeatMsgBody = 2;
+  HeartbeatMsgHead Head = 1;
+  bytes HeartbeatMsgBody = 2;
 }
 
-
+// 重连消息
 message ReConnMsgHead {
     uint64 ConnID = 1;
 }
@@ -66,4 +77,3 @@ message ReConnMsg {
     ReConnMsgHead Head = 1;
     bytes ReConnMsgBody = 2;
 }
-

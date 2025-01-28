@@ -17,16 +17,16 @@ var epool *ePool
 var tcpNum int32
 
 type ePool struct {
-	eChan  chan *connction
+	eChan  chan *connection
 	tables sync.Map
 	// the max number of epoller
 	eSize int
 	done  chan struct{}
 	ln    *net.TCPListener
-	f     func(c *connction, ep *epoller)
+	f     func(c *connection, ep *epoller)
 }
 
-func InitEpool(ln *net.TCPListener, f func(c *connction, ep *epoller)) {
+func InitEpool(ln *net.TCPListener, f func(c *connection, ep *epoller)) {
 	setLimit()
 	epool = NewEpool(ln, f)
 	// create sender of eChan
@@ -59,9 +59,9 @@ func (e *ePool) createAcceptProcess() {
 	}
 }
 
-func NewEpool(ln *net.TCPListener, f func(c *connction, ep *epoller)) *ePool {
+func NewEpool(ln *net.TCPListener, f func(c *connection, ep *epoller)) *ePool {
 	return &ePool{
-		eChan: make(chan *connction),
+		eChan: make(chan *connection),
 		eSize: int(config.GetGatewayEpollerNum()),
 		done:  make(chan struct{}),
 		ln:    ln,
@@ -119,7 +119,7 @@ func (e *ePool) startEProc() {
 	}
 }
 
-func (e *ePool) addTask(conn *connction) {
+func (e *ePool) addTask(conn *connection) {
 	e.eChan <- conn
 }
 
@@ -139,7 +139,7 @@ func newEpoller() (*epoller, error) {
 	}, nil
 }
 
-func (ep *epoller) add(conn *connction) error {
+func (ep *epoller) add(conn *connection) error {
 	fd := conn.fd
 	err := unix.EpollCtl(
 		ep.fd,
@@ -157,7 +157,7 @@ func (ep *epoller) add(conn *connction) error {
 	return nil
 }
 
-func (ep *epoller) remove(conn *connction) error {
+func (ep *epoller) remove(conn *connection) error {
 	subTCPNum()
 	fd := conn.fd
 	err := unix.EpollCtl(
@@ -174,17 +174,17 @@ func (ep *epoller) remove(conn *connction) error {
 	return nil
 }
 
-func (ep *epoller) wait(msec int) ([]*connction, error) {
+func (ep *epoller) wait(msec int) ([]*connection, error) {
 	events := make([]unix.EpollEvent, config.GetEpollWaitQueueSize())
 	n, err := unix.EpollWait(ep.fd, events, msec)
 	if err != nil {
 		return nil, err
 	}
 
-	conns := make([]*connction, n)
+	conns := make([]*connection, n)
 	for index, e := range events {
 		if conn, ok := ep.fdToConnTable.Load(e.Fd); ok {
-			conns[index] = conn.(*connction)
+			conns[index] = conn.(*connection)
 		}
 	}
 	return conns, nil

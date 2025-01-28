@@ -5,7 +5,7 @@
 3. infra: epool -> epoller 
 4. listeners listening clients' requests
 5. infra: protobuf(cmd) / fork prpc
-6. gateway RPC client -> state RPC server (Forward messages to state server)
-7. implement forward messges
-8. IM protocol: CMD
-9. state RPC client -> gateway RPC server (Forward messages from state server to clients)
+7. gateway RPC client(state client) -> state RPC server (Forward messages to state server)
+8. implement forward messges
+9. IM protocol: CMD
+10. state RPC client -> gateway RPC server (Forward messages from state server to clients)

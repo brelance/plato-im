@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 )
 
-type connction struct {
+type connection struct {
 	id   uint64
 	fd   int
 	ep   *epoller
@@ -14,19 +14,19 @@ type connction struct {
 
 var connId uint64
 
-func (c *connction) BindEpoller(ep *epoller) {
+func (c *connection) BindEpoller(ep *epoller) {
 	c.ep = ep
 }
 
-func newConnection(conn *net.TCPConn) *connction {
-	return &connction{
+func newConnection(conn *net.TCPConn) *connection {
+	return &connection{
 		id:   atomic.AddUint64(&connId, 1),
 		fd:   socketFD(conn),
 		conn: conn,
 	}
 }
 
-func (c *connction) Close() {
+func (c *connection) Close() {
 	epool.tables.Delete(c.id)
 
 	// Here is the reason why we should use sync map
@@ -37,6 +37,6 @@ func (c *connction) Close() {
 	panic(err)
 }
 
-func (c *connction) RemoteAddr() string {
+func (c *connection) RemoteAddr() string {
 	return c.conn.RemoteAddr().String()
 }

@@ -14,7 +14,7 @@ func ReadData(conn *net.TCPConn) ([]byte, error) {
 	readFixedData(conn, dataLenBuf)
 	_, err := binary.Decode(dataLenBuf, binary.BigEndian, &dataLen)
 	if err != nil {
-		return nil, fmt.Errorf("Read headlen error:%s", err.Error())
+		return nil, fmt.Errorf("read headlen error:%s", err.Error())
 	}
 
 	if dataLen <= 0 {
@@ -24,9 +24,9 @@ func ReadData(conn *net.TCPConn) ([]byte, error) {
 	dataBuf := make([]byte, dataLen)
 	err = readFixedData(conn, dataBuf)
 	if err != nil {
-		return nil, fmt.Errorf("Read data error:%s", err.Error())
+		return nil, fmt.Errorf("read data error:%s", err.Error())
 	}
-	return dataBuf, err
+	return dataBuf, nil
 }
 
 func readFixedData(conn *net.TCPConn, buf []byte) error {
