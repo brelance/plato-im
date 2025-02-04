@@ -52,7 +52,7 @@ func (e *ePool) createAcceptProcess() {
 					continue
 				}
 				setTCPConfig(c)
-				conn := newConnection(c)
+				conn := NewConnection(c)
 				epool.addTask(conn)
 			}
 		}()
